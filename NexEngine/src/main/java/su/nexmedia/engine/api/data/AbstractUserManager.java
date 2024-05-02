@@ -1,5 +1,6 @@
 package su.nexmedia.engine.api.data;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -129,7 +130,9 @@ public abstract class AbstractUserManager<P extends NexPlugin<P>, U extends Abst
         if (user != null) {
             consumer.accept(user);
         }
-        else this.getUserDataAsync(name).thenAccept(user2 -> this.plugin.runTask(task -> consumer.accept(user2)));
+        else this.getUserDataAsync(name).thenAccept(user2 -> {
+            Bukkit.getGlobalRegionScheduler().execute(this.plugin, () -> consumer.accept(user2));
+        });
     }
 
     public void getUserDataAndPerform(@NotNull UUID uuid, Consumer<U> consumer) {
@@ -137,7 +140,9 @@ public abstract class AbstractUserManager<P extends NexPlugin<P>, U extends Abst
         if (user != null) {
             consumer.accept(user);
         }
-        else this.getUserDataAsync(uuid).thenAccept(user2 -> this.plugin.runTask(task -> consumer.accept(user2)));
+        else this.getUserDataAsync(uuid).thenAccept(user2 -> {
+            Bukkit.getGlobalRegionScheduler().execute(this.plugin, () -> consumer.accept(user2));
+        });
     }
 
     public void getUserDataAndPerformAsync(@NotNull String name, Consumer<U> consumer) {
@@ -178,7 +183,7 @@ public abstract class AbstractUserManager<P extends NexPlugin<P>, U extends Abst
     }
 
     public void saveUser(@NotNull U user) {
-        this.plugin.runTaskAsync(task -> this.dataHolder.getData().saveUser(user));
+        Bukkit.getAsyncScheduler().runNow(plugin, task -> this.dataHolder.getData().saveUser(user));
     }
 
     @NotNull

@@ -1,5 +1,6 @@
 package su.nexmedia.engine.api.data;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -40,7 +41,7 @@ public abstract class AbstractUser<P extends NexPlugin<P>> {
     @SuppressWarnings("unchecked")
     @Deprecated
     public <U extends AbstractUser<P>> void saveData(@NotNull UserDataHolder<P, U> dataHolder) {
-        this.plugin.runTaskAsync(task -> dataHolder.getData().saveUser((U) this));
+        Bukkit.getAsyncScheduler().runNow(this.plugin, task -> dataHolder.getData().saveUser((U) this));
     }
 
     @Deprecated

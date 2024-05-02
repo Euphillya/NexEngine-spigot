@@ -76,7 +76,7 @@ public abstract class Menu<P extends NexPlugin<P>> {
     }
 
     public void openNextTick(@NotNull Player player, int page) {
-        this.plugin.runTask(task -> this.open(player, page));
+        player.getScheduler().run(this.plugin, task -> this.open(player, page), null);
     }
 
     public boolean open(@NotNull MenuViewer viewer, int page) {
@@ -85,7 +85,7 @@ public abstract class Menu<P extends NexPlugin<P>> {
 
     public boolean open(@NotNull Player player, int page) {
         if (!this.canOpen(player, page)) {
-            this.plugin.runTask(task -> player.closeInventory());
+            player.getScheduler().run(this.plugin, task -> player.closeInventory(), null);
             return false;
         }
 

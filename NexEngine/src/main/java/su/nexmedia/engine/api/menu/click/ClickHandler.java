@@ -35,7 +35,7 @@ public class ClickHandler<E extends Enum<E>> {
 
     @NotNull
     public static ItemClick forClose(@NotNull Menu<?> menu) {
-        return ((viewer, event) -> menu.plugin().runTask(task -> viewer.getPlayer().closeInventory()));
+        return ((viewer, event) -> viewer.getPlayer().getScheduler().run(menu.plugin(), task -> viewer.getPlayer().closeInventory(), null));
     }
 
     @NotNull

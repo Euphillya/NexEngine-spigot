@@ -1,13 +1,17 @@
 package su.nexmedia.engine.api.server;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import su.nexmedia.engine.NexPlugin;
+
+import java.util.concurrent.TimeUnit;
 
 public abstract class AbstractTask<P extends NexPlugin<P>> {
 
     @NotNull protected final P plugin;
 
-    protected int     taskId;
+    protected ScheduledTask taskId;
     protected long    interval;
     protected boolean async;
 
@@ -19,7 +23,7 @@ public abstract class AbstractTask<P extends NexPlugin<P>> {
         this.plugin = plugin;
         this.interval = interval;
         this.async = async;
-        this.taskId = -1;
+        this.taskId = null;
     }
 
     public abstract void action();
@@ -30,23 +34,23 @@ public abstract class AbstractTask<P extends NexPlugin<P>> {
     }
 
     public boolean start() {
-        if (this.taskId >= 0) return false;
+        if (this.taskId != null) return false;
         if (this.interval <= 0L) return false;
 
         if (this.async) {
-            this.taskId = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, this::action, 1L, interval).getTaskId();
+            this.taskId = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> action(), 1L, interval*50, TimeUnit.MILLISECONDS);
         }
         else {
-            this.taskId = plugin.getServer().getScheduler().runTaskTimer(this.plugin, this::action, 1L, interval).getTaskId();
+            this.taskId = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, task -> action(), 1L, interval);
         }
-        return true;
+        return this.taskId.getExecutionState().equals(ScheduledTask.ExecutionState.RUNNING);
     }
 
     public boolean stop() {
-        if (this.taskId < 0) return false;
+        if (this.taskId == null) return false;
 
-        this.plugin.getServer().getScheduler().cancelTask(this.taskId);
-        this.taskId = -1;
+        this.taskId.cancel();
+        this.taskId = null;
         return true;
     }
 }

@@ -39,11 +39,11 @@ public class EditorListener extends AbstractListener<NexEngine> {
 
         InputWrapper wrapper = new InputWrapper(event);
 
-        this.plugin.runTask(task -> {
+        player.getScheduler().run(this.plugin, task -> {
             if (wrapper.getTextRaw().equalsIgnoreCase(EditorManager.EXIT) || handler.handle(wrapper)) {
                 EditorManager.endEdit(player);
             }
-        });
+        }, null);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -68,10 +68,10 @@ public class EditorListener extends AbstractListener<NexEngine> {
         AsyncPlayerChatEvent chatEvent = new AsyncPlayerChatEvent(true, player, text, new HashSet<>());
         InputWrapper wrapper = new InputWrapper(chatEvent);
 
-        this.plugin.runTask(task -> {
+        player.getScheduler().run(this.plugin, task -> {
             if (wrapper.getTextRaw().equalsIgnoreCase(EditorManager.EXIT) || handler.handle(wrapper)) {
                 EditorManager.endEdit(player);
             }
-        });
+        }, null);
     }
 }

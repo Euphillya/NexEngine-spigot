@@ -278,11 +278,11 @@ public abstract class NexPlugin<P extends NexPlugin<P>> extends JavaPlugin {
     public final CommandManager<P> getCommandManager() {
         return this.commandManager;
     }
-
+/*
     @NotNull
     public final BukkitScheduler getScheduler() {
         return this.getServer().getScheduler();
-    }
+    }*/
 
     @NotNull
     public final PluginManager getPluginManager() {
@@ -293,7 +293,7 @@ public abstract class NexPlugin<P extends NexPlugin<P>> extends JavaPlugin {
         return this.getClassLoader();
     }
 
-    public void runTask(@NotNull Consumer<BukkitTask> consumer) {
+    /*public void runTask(@NotNull Consumer<BukkitTask> consumer) {
         this.getScheduler().runTask(this, consumer);
     }
 
@@ -315,5 +315,5 @@ public abstract class NexPlugin<P extends NexPlugin<P>> extends JavaPlugin {
 
     public void runTaskTimerAsync(@NotNull Consumer<BukkitTask> consumer, long delay, long interval) {
         this.getScheduler().runTaskTimerAsynchronously(this, consumer, delay, interval);
-    }
+    }*/
 }

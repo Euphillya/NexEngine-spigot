@@ -98,7 +98,7 @@ public class EditorMenu<P extends NexPlugin<P>, T> extends Menu<P> {
     public void handleInput(@NotNull Player player, @NotNull LangMessage prompt, @NotNull InputHandler handler) {
         EditorManager.prompt(player, prompt.getLocalized());
         EditorManager.startEdit(player, handler);
-        this.plugin.runTask(task -> player.closeInventory());
+        player.getScheduler().run(this.plugin, task -> player.closeInventory(), null);
     }
 
     @NotNull

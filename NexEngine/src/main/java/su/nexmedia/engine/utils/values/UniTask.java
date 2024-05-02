@@ -1,7 +1,11 @@
 package su.nexmedia.engine.utils.values;
 
+import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
+import org.bukkit.Bukkit;
 import org.jetbrains.annotations.NotNull;
 import su.nexmedia.engine.NexPlugin;
+
+import java.util.concurrent.TimeUnit;
 
 public class UniTask {
 
@@ -10,7 +14,7 @@ public class UniTask {
     private final long    interval;
     private final boolean async;
 
-    private int     taskId;
+    private ScheduledTask taskId;
 
     public UniTask(@NotNull NexPlugin<?> plugin, @NotNull Runnable runnable, long interval, boolean async) {
         this.plugin = plugin;
@@ -18,7 +22,7 @@ public class UniTask {
         this.interval = interval;
         this.async = async;
 
-        this.taskId = -1;
+        this.taskId = null;
     }
 
     @NotNull
@@ -32,23 +36,23 @@ public class UniTask {
     }
 
     public boolean start() {
-        if (this.taskId >= 0) return false;
+        if (this.taskId != null) return false;
         if (this.interval <= 0L) return false;
 
         if (this.async) {
-            this.taskId = plugin.getServer().getScheduler().runTaskTimerAsynchronously(plugin, runnable, 0L, interval).getTaskId();
+            this.taskId = Bukkit.getAsyncScheduler().runAtFixedRate(plugin, task -> runnable.run(), 1L, interval*50, TimeUnit.MILLISECONDS);
         }
         else {
-            this.taskId = plugin.getServer().getScheduler().runTaskTimer(plugin, runnable, 0L, interval).getTaskId();
+            this.taskId = Bukkit.getGlobalRegionScheduler().runAtFixedRate(plugin, task -> runnable.run(), 1L, interval);
         }
         return true;
     }
 
     public boolean stop() {
-        if (this.taskId < 0) return false;
+        if (this.taskId == null) return false;
 
-        this.plugin.getServer().getScheduler().cancelTask(this.taskId);
-        this.taskId = -1;
+        this.taskId.cancel();
+        this.taskId = null;
         return true;
     }
 
